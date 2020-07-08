@@ -1,12 +1,12 @@
 import React from 'react'
 import Navbar from './navbar'
-import Posts from './posts'
+import Timeline from './timeline'
 
 export default function Home() {
     return (
         <div>
             <Navbar />
-            <Posts />
+            <Timeline />
         </div>
     )
 }

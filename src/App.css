@@ -37,8 +37,15 @@
     transform: rotate(360deg);
   }
 }
-#toSignup a{
+.toSignup a{
   text-decoration: none;
   color: blue;
-  
+
+}
+#appName{
+  font-family: 'Dancing Script', cursive;
+  font-family: 'Lobster', cursive;
+}
+.posts-list li{
+  list-style: none;
 }

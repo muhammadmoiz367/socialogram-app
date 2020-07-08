@@ -1,6 +1,5 @@
 import React from 'react';
 import { Route, Switch} from 'react-router-dom'
-import { createMuiTheme } from '@material-ui/core/styles';
 import './App.css';
 import Home from './components/home';
 import Login from './components/login';
