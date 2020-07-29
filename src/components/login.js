@@ -1,6 +1,7 @@
-import React,{useState} from 'react'
+import React,{useState, useEffect} from 'react'
+import {connect} from 'react-redux'
+import {signIn} from '../actions/authUserActions'
 import {Link } from 'react-router-dom'
-import axios from 'axios'
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
@@ -16,6 +17,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Icon from '@material-ui/core/Icon';
+
 const useStyles = makeStyles(theme=>({
   root: {
     paddingLeft:100,
@@ -47,7 +49,8 @@ const useStyles = makeStyles(theme=>({
   title:{
     marginLeft: -140,
     padding: 20,
-    paddingTop: 30
+    paddingTop: 30,
+    color:'rgb(228,64,95)'
   }
 }));
 
@@ -76,23 +79,16 @@ function Login(props) {
       };
       const handleSubmit=(event)=>{
           event.preventDefault();
-          setLoading(true)
           const userDetails={
             email,
             password
           }
-          axios.post('/login',userDetails)
-          .then((res)=>{
-            console.log(res.data)
-            localStorage.setItem('FBIDToken',`Bearer ${res.data.token}`)
-            setLoading(false)
-            props.history.push('/')
-          })
-          .catch((err)=>{
-            setErrors(err.response.data)
-            setLoading(false)
-          })
+          props.dispatch(signIn(userDetails))
       }
+      useEffect(() => {
+        console.log(props)
+      },[props])
+
   return (
     <Card className={classes.root} >
          <form className={classes.form} noValidate autoComplete="off">
@@ -100,15 +96,15 @@ function Login(props) {
               Socialogram
             </Typography>
             <TextField
+                type="email"
                 id="outlined-basic"
                 label="Email"
                 name="email"
-                type="email"
                 variant="outlined"
                 value={email}
                 onChange={handleChange}
-                helperText={errors.email}
-                error={errors.email ? true : false}
+                helperText={props.errors.email }
+                error={props.errors.email ? true : false}
             /><br /><br />
             <FormControl className={clsx(classes.margin, classes.textField)}>
                 <InputLabel className={classes.label} htmlFor="standard-adornment-password">Password</InputLabel>
@@ -118,8 +114,8 @@ function Login(props) {
                     name="password"
                     value={password}
                     onChange={handleChange}
-                    helperText={errors.password}
-                    error={errors.password ? true : false}
+                    helperText={props.errors.password}
+                    error={props.errors.password ? true : false}
                     endAdornment={
                     <InputAdornment position="end">
                         <IconButton
@@ -140,9 +136,10 @@ function Login(props) {
                 style={{backgroundColor:'rgb(228,64,95)',color:'white'}}
                 className={classes.button}
             >
-                {loading ? <CircularProgress style={{}} color="secondary" /> : 'Login'}
+                {props.loading ? <CircularProgress size={25} color="white" /> : 'Login'}
             </Button>
-            {errors.general ? <p style={{color:'red',textAlign:'center'}}>{errors.general}</p> : null}
+            {props.errors.general ? <p style={{color:'red',textAlign:'center'}}>{props.errors.general}</p> : null}
+            <br/><br/>
             <small className="toSignup">
                 Don't have an account
                 <Link to="/signup"><a> Signup now</a></Link>
@@ -152,4 +149,12 @@ function Login(props) {
   );
 }
 
-export default Login
+const mapStateToProps=({user, ui})=>{
+  return{
+    user,
+    loading: ui.loading,
+    errors: ui.errors
+  }
+}
+
+export default connect(mapStateToProps)(Login)

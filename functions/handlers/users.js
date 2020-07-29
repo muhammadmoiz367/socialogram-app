@@ -35,28 +35,28 @@ exports.signup=(req,res)=>{
         uid=data.user.uid
         return data.user.getIdToken()
     })
-        .then(idToken=>{
-            token=idToken
-            const userCredentials={
-                handle:newUser.handle,
-                email:newUser.email,
-                createdAt:new Date().toISOString(),
-                imageUrl:`https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImage}?alt=media`,
-                uid
-            }
-            db.doc(`/users/${newUser.handle}`).set(userCredentials)
+    .then(idToken=>{
+        token=idToken
+        const userCredentials={
+            handle:newUser.handle,
+            email:newUser.email,
+            createdAt:new Date().toISOString(),
+            imageUrl:`https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImage}?alt=media`,
+            uid
+        }
+        db.doc(`/users/${newUser.handle}`).set(userCredentials)
+        return res.status(201).json({ token })
+    })
+        .then(()=>{
             return res.status(201).json({ token })
         })
-            .then(()=>{
-                return res.status(201).json({ token })
-            })
-        .catch((err)=>{
-            console.error(err)
-            if(err.code === 'auth/email-already-in-use'){
-                return res.status(400).json({ email: 'Email already in use'})
-            }
-            return res.status(500).json({ error: "something went wrong, try again later" })
-        })
+    .catch((err)=>{
+        console.error(err)
+        if(err.code === 'auth/email-already-in-use'){
+            return res.status(400).json({ email: 'Email already in use'})
+        }
+        return res.status(500).json({ error: "something went wrong, try again later" })
+    })
 }
 
 //login

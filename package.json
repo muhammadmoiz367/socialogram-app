@@ -10,13 +10,17 @@
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.2",
     "cors": "^2.8.5",
+    "firebase": "^7.16.1",
+    "jwt-decode": "^2.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
+    "react-redux-firebase": "^3.6.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-topbar-progress-indicator": "^4.1.0",
     "redux": "^4.0.5",
+    "redux-firestore": "^0.13.0",
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
@@ -39,6 +43,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "proxy":"https://us-central1-social-app-7ddb9.cloudfunctions.net/api"
+  }
 }

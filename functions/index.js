@@ -19,7 +19,7 @@ app.get('/post/:postId/like', FBAuth, likePost);
 app.get('/post/:postId/unlike', FBAuth, unlikePost);
 
 //sigunup route
-app.post('/signup',signup);
+app.post("/signup",signup);
 app.post("/login",login);
 app.post("/user/image", FBAuth, uploadImage);
 app.post("/user", FBAuth, addUserDetails);

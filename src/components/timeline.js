@@ -1,26 +1,20 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios'
+import {connect} from 'react-redux'
+import {handleInitialData} from '../actions/dataActions'
 import Grid from '@material-ui/core/Grid'
 import Post from './post'
 
-export default function Timeline() {
-  const [posts,setPosts] = useState([])
+function Timeline(props) {
 
   useEffect(() => {
-    axios.get('/posts')
-    .then(res=>{
-      console.log(res.data);
-      setPosts(res.data)
-    })
-    .catch(err=>{
-      console.log(err)
-    })
+    console.log(props)
+    props.dispatch(handleInitialData())
   },[])
 
   return (
     <Grid container spacing={6}>
       <Grid item sm={8} xs={12}>
-        <Post posts={posts}/>
+        <Post posts={props.posts.posts}/>
       </Grid>
       <Grid item sm={4} xs={12}>
           Profile
@@ -28,3 +22,12 @@ export default function Timeline() {
     </Grid>
   );
 }
+
+const mapStateToProps=({data, user})=>{
+  return{
+    posts: data,
+    authenticated: user.authenticated
+  }
+}
+
+export default connect(mapStateToProps)(Timeline)

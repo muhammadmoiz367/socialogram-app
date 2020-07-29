@@ -1,0 +1,20 @@
+//user constant
+export const SET_USER='SET_USER'
+export const SET_UNAUTHENTICATED='SET_UNAUTHENTICATED'
+export const SET_AUTHENTICATED='SET_AUTHENTICATED'
+export const LOADING_USER='LOADING_USER'
+
+export const LOGIN_SUCCESS='LOGIN_SUCCESS'
+export const LOGIN_ERROR='LOGIN_ERROR'
+export const SIGNOUT_SUCCESS='SIGNOUT_SUCCESS'
+export const SIGNOUT_ERROR='SIGNOUT_ERROR'
+export const SIGNUP_SUCCESS='SIGNUP_SUCCESS'
+export const SIGNUP_ERROR='SIGNUP_ERROR'
+
+//data constants
+export const GET_POSTS='GET_POSTS'
+
+//ui constants
+export const SET_ERRORS='SET_ERRORS'
+export const CLEAR_ERRORS='CLEAR_ERRORS'
+export const LOADING_UI='LOADING_UI'

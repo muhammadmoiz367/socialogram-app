@@ -1,5 +1,5 @@
 const isEmpty=(string)=>{
-    if(string.trim()=== "")
+    if(string=== "")
         return true
     else return false
 };
@@ -14,7 +14,7 @@ exports.signUpValidate=(data)=>{
     let errors = {};
     if(isEmpty(data.email)){
         errors.email="must not be empty";
-    }if(!isEmail(data.email)){
+    }else if(!isEmail(data.email)){
         errors.email="must be a valid email address";
     }
     if(isEmpty(data.password)){
@@ -23,7 +23,7 @@ exports.signUpValidate=(data)=>{
     if(data.password !== data.confirmPassword){
         errors.confirmPassword="Passwords must match";
     }
-    if(isEmpty(data.handle)){
+    if(isEmpty(data.userHandle)){
         errors.handle="must not be empty";
     }
 

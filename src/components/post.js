@@ -71,12 +71,12 @@ function Post(props) {
                             <CardActions disableSpacing>
                                 <IconButton aria-label="add to favorites">
                                     <FavoriteBorderOutlinedIcon />
-                                    <span>{post.likeCount}</span>
                                 </IconButton>
+                                <span>{post.likeCount}</span>
                                 <IconButton aria-label="share">
                                     <QuestionAnswerOutlinedIcon />
-                                    <span>{post.commentCount}</span>
                                 </IconButton>
+                                <span>{post.commentCount}</span>
                             </CardActions>
                         </Card>
                     </li>
