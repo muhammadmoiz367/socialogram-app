@@ -1,6 +1,6 @@
 import React from 'react'
-import Navbar from './navbar'
-import Timeline from './timeline'
+import Navbar from '../components/navbar'
+import Timeline from '../components/timeline'
 
 export default function Home() {
     return (

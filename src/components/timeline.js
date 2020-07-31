@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {handleInitialData} from '../actions/dataActions'
 import Grid from '@material-ui/core/Grid'
 import Post from './post'
+import Profile from './profile'
 
 function Timeline(props) {
 
@@ -10,23 +11,30 @@ function Timeline(props) {
     console.log(props)
     props.dispatch(handleInitialData())
   },[])
-
   return (
-    <Grid container spacing={6}>
-      <Grid item sm={8} xs={12}>
-        <Post posts={props.posts.posts}/>
+    <div className="timeline">
+      <Grid container spacing={6}>
+        <Grid item sm={8} xs={12}>
+        {props.postsIDs === null
+          ? (<p>Loading posts...</p>)
+          : props.postsIDs.map((id)=>(
+            <Post id={id}/>
+          )
+        )}
+        </Grid>
+        <Grid item sm={4} xs={12}>
+            <Profile />
+        </Grid>
       </Grid>
-      <Grid item sm={4} xs={12}>
-          Profile
-      </Grid>
-    </Grid>
+    </div>
   );
 }
 
 const mapStateToProps=({data, user})=>{
+  const {posts} = data
   return{
-    posts: data,
-    authenticated: user.authenticated
+    authenticated: user.authenticated,
+    postsIDs: posts !== undefined ? Object.keys(posts).sort((a,b)=>posts[b].createdAt - posts[a].createdAt) : null
   }
 }
 

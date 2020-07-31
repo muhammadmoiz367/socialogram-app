@@ -7,14 +7,18 @@ const initialState={
     notifications: []
 }
 
-export default function User(state=initialState, action){
+export default function authUserReducer(state=initialState, action){
     switch(action.type){
         case SET_UNAUTHENTICATED:
             return initialState
+        case SET_AUTHENTICATED:
+            return{
+                ...state,
+                authenticated: true
+            }
         case SET_USER:
             return{
                 ...state,
-                authenticated: true,
                 credentials: action.data
             }
         case SIGNOUT_ERROR:

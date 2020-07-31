@@ -1,6 +1,7 @@
 import React from 'react';
 import { fade, makeStyles } from '@material-ui/core/styles';
 import {signOut} from '../actions/authUserActions'
+import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -11,8 +12,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import Avatar from '@material-ui/core/Avatar';
 import MoreIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,6 +52,19 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+  smaller: {
+    width: theme.spacing(3),
+    height: theme.spacing(3),
+    marginLeft: 10,
+    marginRight: 12
+  },
+  small: {
+    width: theme.spacing(3.5),
+    height: theme.spacing(3.5),
+    marginTop: 9,
+    marginLeft: 5
+  },
+
 }));
 
 function Navbar(props) {
@@ -75,7 +89,6 @@ function Navbar(props) {
   };
 
   const handleSignOut=()=>{
-    console.log('log out user')
     props.dispatch(signOut())
   }
   const handleMobileMenuOpen = (event) => {
@@ -93,7 +106,6 @@ function Navbar(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleSignOut}>Logout</MenuItem>
     </Menu>
   );
@@ -117,23 +129,29 @@ function Navbar(props) {
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem >
+        <Link to={{pathname: `/user/${props.user.credentials.handle}`, state: {handle: props.user.credentials.handle} }}>
+          <Avatar alt="Remy Sharp" src={props.user.credentials.imageUrl} className={classes.smaller} />
+          <p>Profile</p>
+        </Link>
+      </MenuItem>
+      <MenuItem onClick={handleSignOut}>
         <IconButton
-          aria-label="account of current user"
+          aria-label="account of logout user"
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
         >
           <AccountCircle />
         </IconButton>
-        <p>Profile</p>
+        <p>Logout</p>
       </MenuItem>
     </Menu>
   );
 
   return (
     <div className={classes.grow}>
-      <AppBar position="static" style={{backgroundColor:'rgb(228,64,95)'}}>
+      <AppBar position="fixed" style={{backgroundColor:'rgb(228,64,95)'}}>
         <Toolbar>
           <IconButton
             edge="start"
@@ -143,9 +161,11 @@ function Navbar(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap id="appName">
-            Socialogram
-          </Typography>
+          <Link to="/">
+            <Typography className={classes.title} variant="h6" noWrap id="appName" style={{color:'white'}}>
+              Socialogram
+            </Typography>
+          </Link>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton aria-label="show 17 new notifications" color="inherit">
@@ -153,16 +173,7 @@ function Navbar(props) {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
+            <Link to={{pathname: `/user/${props.user.credentials.handle}`, state: {handle: props.user.credentials.handle} }}><Avatar alt="Remy Sharp" src={props.user.credentials.imageUrl} className={classes.small} onClick={handleProfileMenuOpen}/></Link>
           </div>
           <div className={classes.sectionMobile}>
             <IconButton
@@ -183,4 +194,10 @@ function Navbar(props) {
   );
 }
 
-export default connect()(Navbar)
+const mapStateToProps=({user})=>{
+  return{
+    user
+  }
+}
+
+export default connect(mapStateToProps)(Navbar)

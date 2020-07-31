@@ -4,7 +4,7 @@ const initialState={
     loading: false,
     errors: {}
 }
-const uiReducer=(state=initialState,action)=>{
+const uiReducer=(state=initialState, action)=>{
     switch(action.type){
         case LOADING_UI:
             console.log('loading ui')

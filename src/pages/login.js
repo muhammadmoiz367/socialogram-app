@@ -83,7 +83,7 @@ function Login(props) {
             email,
             password
           }
-          props.dispatch(signIn(userDetails))
+          props.dispatch(signIn(userDetails,props.history))
       }
       useEffect(() => {
         console.log(props)
@@ -149,11 +149,12 @@ function Login(props) {
   );
 }
 
-const mapStateToProps=({user, ui})=>{
+const mapStateToProps=({user, ui, data})=>{
   return{
     user,
     loading: ui.loading,
-    errors: ui.errors
+    errors: ui.errors,
+    data
   }
 }
 

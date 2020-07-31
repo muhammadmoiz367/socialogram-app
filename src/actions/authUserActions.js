@@ -7,6 +7,7 @@ import {
     LOADING_UI,
     SET_USER,
     SET_UNAUTHENTICATED,
+    SET_AUTHENTICATED,
     SIGNOUT_ERROR
 } from '../actionConstants';
 import 'firebase/auth';
@@ -39,6 +40,11 @@ function setUnauthenticated(){
         type: SET_UNAUTHENTICATED
     }
 }
+function setAuthenticated(){
+    return{
+        type: SET_AUTHENTICATED
+    }
+}
 function signoutError(err){
     return{
         type: SIGNOUT_ERROR,
@@ -46,7 +52,7 @@ function signoutError(err){
     }
 }
 
-export const signIn=(credentials)=>{
+export const signIn=(credentials,history)=>{
     return (dispatch, getState, {getFirebase, getFirestore})=>{
         const firebase=getFirebase();
         const firestore=getFirebase().firestore()
@@ -66,10 +72,11 @@ export const signIn=(credentials)=>{
             db.collection("users").where('uid','==',res.user.uid).get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) =>{
+                    dispatch(setAuthenticated())
                     dispatch(setUser(doc.data()))
                 });
+                history.push('/')
             });
-            window.location.href="/"
         })
         .catch((err)=>{
             console.log(err)
@@ -84,7 +91,7 @@ export const signIn=(credentials)=>{
 }
 
 
-export const signUp=(newUser)=>{
+export const signUp=(newUser,history)=>{
     return (dispatch, getState, {getFirebase, getFirestore})=>{
         const firebase=getFirebase();
         const firestore=getFirebase().firestore();
@@ -123,10 +130,11 @@ export const signUp=(newUser)=>{
             db.collection("users").where('uid','==',uid).get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) =>{
+                    localStorage.setItem('UserData',doc.data())
                     dispatch(setUser(doc.data()))
                 });
+                history.push('/')
             });
-            window.location.href="/"
         })
         .catch((err)=>{
             if(err.code === 'auth/email-already-in-use'){
@@ -142,6 +150,7 @@ export const signOut=()=>{
         firebase.auth().signOut()
         .then(()=>{
             localStorage.removeItem('FBIdToken')
+            localStorage.removeItem('userData')
             dispatch(setUnauthenticated())
             window.location.reload()
         })

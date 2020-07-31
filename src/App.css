@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  box-sizing: border-box;
 }
 
 .App-logo {
@@ -48,4 +49,16 @@
 }
 .posts-list li{
   list-style: none;
+}
+
+.userName{
+  color: black;
+  margin-right: 5px;
+}
+.timeline{
+  margin-top: 7%;
+}
+a{
+  color: black;
+  text-decoration: none;
 }

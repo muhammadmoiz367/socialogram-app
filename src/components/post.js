@@ -1,4 +1,6 @@
 import React from 'react'
+import {Link} from 'react-router-dom'
+import {connect} from 'react-redux'
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
@@ -13,78 +15,92 @@ import QuestionAnswerOutlinedIcon from '@material-ui/icons/QuestionAnswerOutline
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
+import moment from 'moment'
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      paddingLeft:50,
       maxWidth: 900,
       marginTop: 20,
       marginLeft: 20,
       textAlign:'left'
     },
     media: {
-      //maxHeight: 0,
-      //paddingTop: '56.25%', // 16:9
+      maxHeight: 0,
+      paddingTop: '56.25%', // 16:9
     },
     avatar: {
-      backgroundColor: red[500],
+      height: 45,
+      width: 45
     },
     content:{
-        paddingLeft:20
+        marginTop: -20
     }
   }));
 
 function Post(props) {
     const classes = useStyles();
+    const handleLike=(e)=>{
+        e.preventDefault()
+        console.log('Post liked')
+    }
     return (
         <div>
             <ul className="posts-list">
-            {!props.posts
-                ? <p>Loading...</p>
-                : props.posts.map(post=>(
-                    <li key={post.postId}>
+            { props.post === null
+                ? ( <p>Post not found</p>)
+                : (
+                    <li key={props.id}>
                         <Card  className={classes.root}>
                             <CardHeader
                                 avatar={
-                                <Avatar aria-label="recipe" className={classes.avatar}>
-                                    {post.userHandle[1]}
-                                </Avatar>
+                                <Avatar src={props.post.userImage} alt={props.post.userHandle} aria-label="recipe" className={classes.avatar} />
                                 }
                                 action={
                                 <IconButton aria-label="settings">
                                     <MoreVertIcon />
                                 </IconButton>
                                 }
-                                title={post.userHandle}
-                                subheader={post.createdAt}
+                                title={props.post.userHandle}
                             />
                             <CardMedia
                                 className={classes.media}
-                                image=""
+                                image="https://firebasestorage.googleapis.com/v0/b/social-app-7ddb9.appspot.com/o/353524666602.jpg?alt=media"
                                 title="Paella dish"
                             />
-                            <CardContent className={classes.content}>
-                                <Typography variant="body2" color="textSecondary" component="p">
-                                {post.body}
-                                </Typography>
-                            </CardContent>
-                            <CardActions disableSpacing>
-                                <IconButton aria-label="add to favorites">
-                                    <FavoriteBorderOutlinedIcon />
-                                </IconButton>
-                                <span>{post.likeCount}</span>
-                                <IconButton aria-label="share">
-                                    <QuestionAnswerOutlinedIcon />
-                                </IconButton>
-                                <span>{post.commentCount}</span>
-                            </CardActions>
+                            <Link to={{pathname: `/post/${props.id}`, state: {id: props.id} }}>
+                                <CardActions disableSpacing>
+                                    <IconButton aria-label="add to favorites">
+                                        <FavoriteBorderOutlinedIcon onClick={handleLike}/>
+                                    </IconButton>
+                                    <span>{props.post.likeCount}</span>
+                                    <IconButton aria-label="share">
+                                        <QuestionAnswerOutlinedIcon />
+                                    </IconButton>
+                                    <span>{props.post.commentCount}</span>
+                                </CardActions>
+                                <CardContent className={classes.content}>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        <span className="userName">{props.post.userHandle}</span> {props.post.body}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        {moment(props.post.createdAt).startOf('day').fromNow() }
+                                    </Typography>
+                                </CardContent>
+                            </Link>
                         </Card>
                     </li>
-                ))
+                )
             }
             </ul>
         </div>
     )
 }
 
-export default Post
+const mapStateToProps=({data},{id})=>{
+    const post=data.posts[id]
+    return{
+        post: post ? post : null
+    }
+}
+
+export default connect(mapStateToProps)(Post)

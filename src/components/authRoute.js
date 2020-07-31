@@ -5,8 +5,7 @@ import {connect} from 'react-redux'
 class AuthRoute extends React.Component {
    render() {
     const Component = this.props.component;
-    const isAuthenticated = localStorage.getItem('FBIdToken')
-    console.log(this.props)
+    const isAuthenticated = localStorage.getItem('FBIdToken') 
     return isAuthenticated ? (
         <Component />
     ) : (
