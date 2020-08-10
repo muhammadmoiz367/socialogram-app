@@ -25,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
       textAlign:'left'
     },
     media: {
-      maxHeight: 0,
-      paddingTop: '56.25%', // 16:9
+      height: 300,
+      width: '100%'
     },
     avatar: {
       height: 45,
@@ -64,7 +64,7 @@ function Post(props) {
                             />
                             <CardMedia
                                 className={classes.media}
-                                image="https://firebasestorage.googleapis.com/v0/b/social-app-7ddb9.appspot.com/o/353524666602.jpg?alt=media"
+                                image={props.post.postImage}
                                 title="Paella dish"
                             />
                             <Link to={{pathname: `/post/${props.id}`, state: {id: props.id} }}>
@@ -83,7 +83,7 @@ function Post(props) {
                                         <span className="userName">{props.post.userHandle}</span> {props.post.body}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary" component="p">
-                                        {moment(props.post.createdAt).startOf('day').fromNow() }
+                                        {moment(props.post.createdAt).startOf('hour').fromNow() }
                                     </Typography>
                                 </CardContent>
                             </Link>

@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
+      marginLeft: theme.spacing(7)
     },
   },
 
@@ -130,8 +131,8 @@ function Navbar(props) {
         <p>Notifications</p>
       </MenuItem>
       <MenuItem >
+        <Avatar alt="Remy Sharp" src={props.user.credentials.imageUrl} className={classes.smaller} />
         <Link to={{pathname: `/user/${props.user.credentials.handle}`, state: {handle: props.user.credentials.handle} }}>
-          <Avatar alt="Remy Sharp" src={props.user.credentials.imageUrl} className={classes.smaller} />
           <p>Profile</p>
         </Link>
       </MenuItem>
@@ -153,14 +154,6 @@ function Navbar(props) {
     <div className={classes.grow}>
       <AppBar position="fixed" style={{backgroundColor:'rgb(228,64,95)'}}>
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-          >
-            <MenuIcon />
-          </IconButton>
           <Link to="/">
             <Typography className={classes.title} variant="h6" noWrap id="appName" style={{color:'white'}}>
               Socialogram

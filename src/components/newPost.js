@@ -1,16 +1,21 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React,{useState} from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import {firebaseConfig} from '../firebase/firebase';
+import {withRouter} from 'react-router-dom'
+import {connect} from 'react-redux'
 import clsx from 'clsx';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import AddAPhotoRoundedIcon from '@material-ui/icons/AddAPhotoRounded';
+import ImageRoundedIcon from '@material-ui/icons/ImageRounded';
 import TextFieldsRoundedIcon from '@material-ui/icons/TextFieldsRounded';
 import VideoLabelIcon from '@material-ui/icons/VideoLabel';
 import StepConnector from '@material-ui/core/StepConnector';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import ImageForm from '../components/imageForm'
+import TextForm from '../components/textForm'
+import {createPost} from '../actions/dataActions'
 
 const ColorlibConnector = withStyles({
     alternativeLabel: {
@@ -65,7 +70,7 @@ function ColorlibStepIcon(props) {
   const { active, completed } = props;
 
   const icons = {
-    1: <AddAPhotoRoundedIcon />,
+    1: <ImageRoundedIcon />,
     2: <TextFieldsRoundedIcon />,
     3: <VideoLabelIcon />,
   };
@@ -82,6 +87,9 @@ function ColorlibStepIcon(props) {
   );
 }
 
+function getSteps() {
+  return ['Select picture', 'Write caption', 'Create post'];
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -96,27 +104,39 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getSteps() {
-  return ['Select picture', 'Write caption', 'Create post'];
-}
 
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return 'Select picture to upload...';
-    case 1:
-      return 'Write a suitable caption..';
-    case 2:
-      return 'Upload your picture';
-    default:
-      return 'Unknown step';
-  }
-}
-
-export default function NewPost() {
+function NewPost(props) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = getSteps();
+
+  const [image, setImage] = useState('')
+  const [text, setText] = useState('')
+  const [url, setUrl] = useState('')
+
+  function handleImageChange(image, url){
+    setImage(image);
+    setUrl(url);
+  }
+  function handleTextChange(text){
+    setText(text)
+  }
+
+  function getStepContent(step) {
+    switch (step) {
+      case 0:
+        return (<ImageForm onHandleImageChange={handleImageChange}/>);
+      case 1:
+        return (<TextForm onHandleTextChange={handleTextChange} />);
+      case 2:
+        return (<div>
+          <img src={url} alt={image} style={{display: 'block' }} className="uploadedImage" />
+          <p>{text}</p>
+        </div>);
+      default:
+        return 'Unknown step';
+    }
+  }
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -125,7 +145,18 @@ export default function NewPost() {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
+  const handleSubmitPost=()=>{
+    const newPostData={
+      body: text,
+      userHandle: props.user.credentials.handle,
+      userImage: props.user.credentials.imageUrl,
+      createdAt: new Date().toISOString(),
+      postImage: `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/postImages%2F${image}?alt=media`,
+      likeCount: 0,
+      commentCount: 0
+    }
+    props.dispatch(createPost(newPostData, props.history))
+  }
 
   return (
     <div className={classes.root} className="timeline">
@@ -137,14 +168,11 @@ export default function NewPost() {
           </Step>
         ))}
       </Stepper>
+
       <div>
-        {activeStep === steps.length ? (
-          <div>
-            <Typography className={classes.instructions}>
-              All steps completed - Picture uploaded successfully
-            </Typography>
-          </div>
-        ) : (
+        {activeStep === steps.length
+        ? handleSubmitPost()
+        : (
           <div>
             <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
             <div>
@@ -157,6 +185,7 @@ export default function NewPost() {
                 onClick={handleNext}
                 className={classes.button}
                 style={{backgroundColor:'rgb(228,64,95)'}}
+
               >
                 {activeStep === steps.length - 1 ? 'Post' : 'Next'}
               </Button>
@@ -167,3 +196,11 @@ export default function NewPost() {
     </div>
   );
 }
+
+const mapStateToProps=({user})=>{
+  return{
+    user
+  }
+}
+
+export default withRouter(connect(mapStateToProps)(NewPost))

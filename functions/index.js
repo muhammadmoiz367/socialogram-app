@@ -10,8 +10,8 @@ const {getAllPosts, createPost, getPost, commentOnPost, deletePost, likePost, un
 const {signup, login, uploadImage, addUserDetails, getAuthenticatedUser, getUserDetails, markNotificationsRead} =require('./handlers/users');
 
 //posts route
-app.get('/posts',getAllPosts);
-app.post('/post', FBAuth, createPost);
+app.get('/posts',getAllPosts);    //done
+app.post('/post', FBAuth, createPost);    //done
 app.get('/post/:postId', getPost);
 app.post('/post/:postId/comment', FBAuth, commentOnPost);
 app.delete('/post/:postId', FBAuth, deletePost);
@@ -19,8 +19,8 @@ app.get('/post/:postId/like', FBAuth, likePost);
 app.get('/post/:postId/unlike', FBAuth, unlikePost);
 
 //sigunup route
-app.post("/signup",signup);
-app.post("/login",login);
+app.post("/signup",signup);   //done
+app.post("/login",login);   //done
 app.post("/user/image", FBAuth, uploadImage);
 app.post("/user", FBAuth, addUserDetails);
 app.get("/user", FBAuth, getAuthenticatedUser);

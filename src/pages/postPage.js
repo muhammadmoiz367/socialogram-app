@@ -1,23 +1,22 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {withRouter, useLocation} from 'react-router-dom'
+import {useLocation} from 'react-router-dom'
 import Navbar from '../components/navbar'
-import Post from '../components/post'
+import RepliesPage from '../components/repliesPage'
 
-function PostPage(props) {
-    console.log(props);
+function PostPage() {
+
     const location=useLocation();
-    console.log(location.state.post);
+    console.log(location.state);
     return (
         <div className="timeline">
             <Navbar />
-            <Post id={location.state.id} />
+            <RepliesPage id={location.state.id} />
         </div>
     )
 }
 
-const mapStateToProps=(props)=>{
-
+const mapStateToProps=()=>{
     return{
 
     }

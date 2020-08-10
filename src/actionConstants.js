@@ -13,6 +13,9 @@ export const SIGNUP_ERROR='SIGNUP_ERROR'
 
 //data constants
 export const GET_POSTS='GET_POSTS'
+export const CREATE_POST='CREATE_POST'
+export const GET_SPECIFIC_POST='GET_SPECIFIC_POST'
+export const CREATE_NEW_COMMENT='CREATE_NEW_COMMENT'
 
 //ui constants
 export const SET_ERRORS='SET_ERRORS'

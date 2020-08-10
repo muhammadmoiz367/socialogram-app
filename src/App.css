@@ -62,3 +62,32 @@ a{
   color: black;
   text-decoration: none;
 }
+.addImageBtn{
+  margin-left: -45%;
+
+}
+.addImageBtn:hover{
+  color: #717174 !important;
+}
+.addImageText{
+  margin-left: 30px;
+  margin-top: -30px;
+}
+#imageText{
+  display: none;
+  margin-left: -60px;
+  margin-top: -30px;
+}
+.formDiv{
+  margin: 10px auto 50px auto;
+}
+.uploadedImage{
+  display: none;
+  width: 250px;
+  height: 200px;
+  border-radius: 10px;
+  margin: 3% 35% ;
+}
+.comment-box{
+  
+}
