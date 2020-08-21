@@ -74,7 +74,7 @@ function SignUp(props) {
             confirmPassword,
             userHandle
           }
-          props.dispatch(signUp(userDetails))
+          props.dispatch(signUp(userDetails, props.history))
       }
       useEffect(() => {
         console.log(props)

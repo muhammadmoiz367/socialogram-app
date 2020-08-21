@@ -1,7 +1,8 @@
 
 import firebase, { db } from '../firebase/firebase';
-import {GET_POSTS, CREATE_POST, GET_SPECIFIC_POST, CREATE_NEW_COMMENT} from '../actionConstants'
+import {GET_POSTS, CREATE_POST, GET_SPECIFIC_POST, CREATE_NEW_COMMENT, LIKE_POST, UNLIKE_POST, LOADING_DATA} from '../actionConstants'
 import 'firebase/firestore';
+import post from '../components/post';
 
 function getPosts(data){
   return{
@@ -27,19 +28,39 @@ function createNewComment(comment){
     data: comment
   }
 }
-
+function likePostAction(data){
+  return{
+    type: LIKE_POST,
+    data
+  }
+}
+function unlikePostAction(data){
+  return{
+    type: UNLIKE_POST,
+    data
+  }
+}
 export const handleInitialData=()=>{
   return (dispatch, getState, {getFirebase, getFirestore})=>{
     const firebase=getFirebase();
     const firestore=getFirebase().firestore()
     let id;
-    let posts={}
     db.collection("posts").orderBy('createdAt', 'desc').get()
     .then((querySnapshot) => {
+      let posts=[]
       querySnapshot.forEach((doc) =>{
-      id=doc.id;
-      posts[id]=doc.data();
+        posts.push({
+            postId:doc.id,
+            body:doc.data().body,
+            userHandle:doc.data().userHandle,
+            createdAt:doc.data().createdAt,
+            userImage: doc.data().userImage,
+            likeCount:doc.data().likeCount,
+            commentCount: doc.data().commentCount,
+            postImage: doc.data().postImage
+          })
        });
+      dispatch({type: LOADING_DATA}) 
       dispatch(getPosts(posts))
     })
     .catch(err=>{
@@ -47,7 +68,7 @@ export const handleInitialData=()=>{
     })
   }
 }
-
+//create post
 export const createPost=(newPost, history)=>{
   return (dispatch, getState, {getFirebase, getFirestore})=>{
     db.collection("posts").add(newPost)
@@ -67,7 +88,7 @@ export const createPost=(newPost, history)=>{
     })
   }
 }
-
+//ge specific post
 export const getSpecificPost=(id)=>{
   return (dispatch, {getFirebase, getFirestore})=>{
     let postData = {};
@@ -78,7 +99,7 @@ export const getSpecificPost=(id)=>{
     }
     postData = doc.data();
     postData.postId = doc.id;
-    return db.collection('comments').orderBy('createdAt', 'desc').where('postId', '==', id).get();
+    return db.collection('comments').where('postId', '==', id).get();
     })
     .then((data) => {
         postData.comments = [];
@@ -99,6 +120,7 @@ export const getSpecificPost=(id)=>{
     });
   }
 }
+//comment on post
 export const commentOnPost=(newComment, postId)=>{
   return (dispatch)=>{
     db.doc(`/posts/${postId}`).get()
@@ -116,10 +138,106 @@ export const commentOnPost=(newComment, postId)=>{
       db.doc(`/comments/${doc.id}`).get()
     })
     .then(doc=>{
+      window.location.reload(false);
       dispatch(createNewComment(doc.data()))
     })
     .catch((err)=>{
       console.log(err);
+    })
+  }
+}
+//like on post
+export const likePost = (postId, handle) => {
+  return (dispatch)=>{
+    const likeDocument = db.collection('likes').where('userHandle', '==', handle).where('postId', '==', postId).limit(1);
+    const postDocument = db.doc(`/posts/${postId}`);
+    let postData;
+
+    postDocument.get()
+    .then((doc) => {
+        if (doc.exists) {
+            postData = doc.data();
+            postData.postId = doc.id;
+            return likeDocument.get();
+        } else {
+            console.log('post not found');
+        }
+    })
+    .then((data) => {
+        if (data.empty) {
+            return db.collection('likes').add({
+                postId: postId,
+                userHandle: handle
+            })
+            .then(() => {
+                postData.likeCount++;
+                return postDocument.update({ likeCount: postData.likeCount });
+            })
+            .then(() => {
+                dispatch(likePostAction(postData))
+            });
+        } else {
+            console.log('Post already liked')
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+    });
+  }
+};
+//unlike post
+export const unlikePost = (postId, handle) => {
+  return (dispatch)=>{
+    const likeDocument = db.collection('likes').where('userHandle', '==', handle).where('postId', '==', postId).limit(1);
+    const postDocument = db.doc(`/posts/${postId}`);
+    let postData;
+
+    postDocument.get()
+      .then((doc) => {
+        if (doc.exists) {
+          postData = doc.data();
+          postData.postId = doc.id;
+          return likeDocument.get();
+        } else {
+            console.log('post not found');
+        }
+      })
+      .then((data) => {
+        if (data.empty) {
+          console.log('post not liked');
+        } else {
+          return db.doc(`/likes/${data.docs[0].id}`).delete()
+            .then(() => {
+              postData.likeCount--;
+              return postDocument.update({ likeCount: postData.likeCount });
+            })
+            .then(() => {
+              dispatch(unlikePostAction(postData))
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+};
+
+//forced check for like
+export const forcedIsLiked = (postId, handle) =>{
+  return (dispatch)=>{
+    db.collection('likes').where('userHandle', '==', handle).where('postId', '==', postId).limit(1).get()
+    .then((doc)=>{
+      if(doc.exists){
+        console.log('true')
+        return true
+      }
+      else{
+        console.log('true')
+        return false
+      }
+    })
+    .catch(err=>{
+      console.log(err)
     })
   }
 }

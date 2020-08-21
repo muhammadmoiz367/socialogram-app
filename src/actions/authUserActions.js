@@ -8,7 +8,8 @@ import {
     SET_USER,
     SET_UNAUTHENTICATED,
     SET_AUTHENTICATED,
-    SIGNOUT_ERROR
+    SIGNOUT_ERROR,
+    GET_SPECIFIC_USER
 } from '../actionConstants';
 import 'firebase/auth';
 import 'firebase/firestore';
@@ -49,6 +50,12 @@ function signoutError(err){
     return{
         type: SIGNOUT_ERROR,
         err
+    }
+}
+function getSpecificUserData(data){
+    return{
+        type: GET_SPECIFIC_USER,
+        data
     }
 }
 
@@ -116,6 +123,7 @@ export const signUp=(newUser,history)=>{
             let token=`Bearer ${data.user.refreshToken}`
             localStorage.setItem('FBIdToken',token)
             uid=data.user.uid;
+            dispatch(clearErrors())
             const userCredentials={
                 handle:newUser.userHandle,
                 email:newUser.email,
@@ -156,6 +164,40 @@ export const signOut=()=>{
         })
         .catch((err)=>{
             dispatch(signoutError(err))
+        })
+    }
+}
+export const getSpecificUser = (handle)=>{
+    return (dispatch)=>{
+        let userData={};
+        db.doc(`/users/${handle}`).get()
+        .then((doc)=>{
+            if(doc.exists){
+                userData=doc.data();
+                return db.collection('posts').where('userHandle','==',handle).orderBy('createdAt','desc').get()
+            }
+            else{
+                console.log('User not found')
+            }
+        })
+        .then((data)=>{
+            userData.posts=[];
+            data.forEach((doc)=>{
+                userData.posts.push({
+                    body: doc.data().body,
+                    createdAt: doc.data().createdAt,
+                    userHandle: doc.data().userHandle,
+                    userImage: doc.data().userImage,
+                    likeCount: doc.data().likeCount,
+                    commentCount: doc.data().commentCount,
+                    postImage: doc.data().postImage,
+                    postId: doc.id
+                })
+            })
+            dispatch(getSpecificUserData(userData))
+        })
+        .catch((err)=>{
+            console.log(err);
         })
     }
 }

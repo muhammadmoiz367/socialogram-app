@@ -15,6 +15,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Avatar from '@material-ui/core/Avatar';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import HomeIcon from '@material-ui/icons/Home';
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
     [theme.breakpoints.up('sm')]: {
       display: 'block',
-      marginLeft: theme.spacing(7)
+      marginLeft: theme.spacing(3)
     },
   },
 
@@ -63,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(3.5),
     height: theme.spacing(3.5),
     marginTop: 9,
-    marginLeft: 5
+    marginLeft: 15
   },
 
 }));
@@ -122,6 +123,14 @@ function Navbar(props) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
+      <MenuItem >
+        <IconButton aria-label="Home" color="inherit">
+          <HomeIcon />
+        </IconButton>
+        <Link to="/" >
+          <p>Home</p>
+        </Link>
+      </MenuItem>
       <MenuItem>
         <IconButton aria-label="show 11 new notifications" color="inherit">
           <Badge badgeContent={11} color="secondary">
@@ -154,6 +163,14 @@ function Navbar(props) {
     <div className={classes.grow}>
       <AppBar position="fixed" style={{backgroundColor:'rgb(228,64,95)'}}>
         <Toolbar>
+        <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="open drawer"
+          >
+            <MenuIcon />
+          </IconButton>
           <Link to="/">
             <Typography className={classes.title} variant="h6" noWrap id="appName" style={{color:'white'}}>
               Socialogram
@@ -161,12 +178,20 @@ function Navbar(props) {
           </Link>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
+          
+            <IconButton aria-label="Home" color="inherit">
+            <Link to="/" >
+              <HomeIcon style={{color:'white'}} />
+            </Link>  
+            </IconButton>
             <IconButton aria-label="show 17 new notifications" color="inherit">
               <Badge badgeContent={17} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <Link to={{pathname: `/user/${props.user.credentials.handle}`, state: {handle: props.user.credentials.handle} }}><Avatar alt="Remy Sharp" src={props.user.credentials.imageUrl} className={classes.small} onClick={handleProfileMenuOpen}/></Link>
+            <Link to={{pathname: `/user/${props.user.credentials.handle}`, state: {handle: props.user.credentials.handle} }}>
+              <Avatar alt="Remy Sharp" src={props.user.credentials.imageUrl} className={classes.small} onClick={handleProfileMenuOpen}/>
+            </Link>
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

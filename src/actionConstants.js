@@ -10,14 +10,18 @@ export const SIGNOUT_SUCCESS='SIGNOUT_SUCCESS'
 export const SIGNOUT_ERROR='SIGNOUT_ERROR'
 export const SIGNUP_SUCCESS='SIGNUP_SUCCESS'
 export const SIGNUP_ERROR='SIGNUP_ERROR'
+export const GET_SPECIFIC_USER='GET_SPECIFIC_USER'
 
 //data constants
 export const GET_POSTS='GET_POSTS'
 export const CREATE_POST='CREATE_POST'
 export const GET_SPECIFIC_POST='GET_SPECIFIC_POST'
 export const CREATE_NEW_COMMENT='CREATE_NEW_COMMENT'
+export const LIKE_POST='LIKE_POST'
+export const UNLIKE_POST='UNLIKE_POST'
 
 //ui constants
 export const SET_ERRORS='SET_ERRORS'
 export const CLEAR_ERRORS='CLEAR_ERRORS'
 export const LOADING_UI='LOADING_UI'
+export const LOADING_DATA='LOADING_DATA'

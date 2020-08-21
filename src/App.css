@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .App-logo {
@@ -89,5 +90,17 @@ a{
   margin: 3% 35% ;
 }
 .comment-box{
-  
+  border-top: 2px solid lightgray;
+  margin-bottom: 3%;
+}
+#comment{
+  margin-left: 5%;
+}
+.replies-box{
+  height: 210px;
+  list-style: none;
+  overflow-y: auto;
+}
+.avatar-name{
+  display: inline ;
 }

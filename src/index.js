@@ -49,7 +49,9 @@ ReactDOM.render(
   </Provider>,
   document.getElementById("root")
 );
-
+if(module.hot) {
+	module.hot.accept();
+}
 /*
 function AuthIsLoaded({children}){
   const auth=useSelector(state => state.firebase.auth)

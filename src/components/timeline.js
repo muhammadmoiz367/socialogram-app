@@ -8,17 +8,18 @@ import Profile from './profile'
 function Timeline(props) {
 
   useEffect(() => {
-    console.log(props)
     props.dispatch(handleInitialData())
+    console.log(props)
   },[])
+
   return (
     <div className="timeline">
-      <Grid container spacing={6}>
+      <Grid container spacing={6} >
         <Grid item sm={8} xs={12}>
-        {props.postsIDs === null
+        {props.loading === false
           ? (<p>Loading posts...</p>)
-          : props.postsIDs.map((id)=>(
-            <Post id={id}/>
+          : props.posts.map((post)=>(
+            <Post key={props.postId} post={post} />
           )
         )}
         </Grid>
@@ -34,7 +35,8 @@ const mapStateToProps=({data, user})=>{
   const {posts} = data
   return{
     authenticated: user.authenticated,
-    postsIDs: posts !== undefined ? Object.keys(posts).sort((a,b)=>posts[b].createdAt - posts[a].createdAt) : null
+    posts: data.posts,
+    loading: data.loading
   }
 }
 

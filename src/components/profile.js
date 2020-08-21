@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
 
 function Profile(props) {
     const classes = useStyles();
-    console.log(props)
     return (
       <div className={classes.root}>
           <Link to={{pathname: `/user/${props.user.credentials.handle}`, state: {handle: props.user.credentials.handle} }}>

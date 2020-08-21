@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import CardHeader from '@material-ui/core/CardHeader';
@@ -16,6 +16,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import moment from 'moment'
+import {likePost, unlikePost, getSpecificPost, forcedIsLiked} from '../actions/dataActions'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -39,18 +40,29 @@ const useStyles = makeStyles((theme) => ({
 
 function Post(props) {
     const classes = useStyles();
+    const isLiked=()=>{
+        if(props.user.likes && props.user.likes.find((like)=> like.postId === props.post.postId))
+            return true
+        else if(props.user.credentials.handle){
+            return props.dispatch(forcedIsLiked(props.post.postId, props.user.credentials.handle))
+        }    
+        else    
+            return false
+    }
     const handleLike=(e)=>{
         e.preventDefault()
-        console.log('Post liked')
+        props.dispatch(likePost(props.post.postId, props.user.credentials.handle))
+    }
+    const handleUnlike=(e)=>{
+        e.preventDefault()
+        props.dispatch(unlikePost(props.post.postId, props.user.credentials.handle))
     }
     return (
         <div>
             <ul className="posts-list">
-            { props.post === null
-                ? ( <p>Post not found</p>)
-                : (
-                    <li key={props.id}>
-                        <Card  className={classes.root}>
+                <li key={props.post.id}>
+                    <Card  className={classes.root}>
+                        <Link to={{pathname: `/user/${props.post.userHandle}`, state: {handle: props.post.userHandle} }}>
                             <CardHeader
                                 avatar={
                                 <Avatar src={props.post.userImage} alt={props.post.userHandle} aria-label="recipe" className={classes.avatar} />
@@ -62,44 +74,46 @@ function Post(props) {
                                 }
                                 title={props.post.userHandle}
                             />
-                            <CardMedia
-                                className={classes.media}
-                                image={props.post.postImage}
-                                title="Paella dish"
-                            />
-                            <Link to={{pathname: `/post/${props.id}`, state: {id: props.id} }}>
-                                <CardActions disableSpacing>
-                                    <IconButton aria-label="add to favorites">
-                                        <FavoriteBorderOutlinedIcon onClick={handleLike}/>
-                                    </IconButton>
-                                    <span>{props.post.likeCount}</span>
-                                    <IconButton aria-label="share">
-                                        <QuestionAnswerOutlinedIcon />
-                                    </IconButton>
-                                    <span>{props.post.commentCount}</span>
-                                </CardActions>
-                                <CardContent className={classes.content}>
-                                    <Typography variant="body2" color="textSecondary" component="p">
-                                        <span className="userName">{props.post.userHandle}</span> {props.post.body}
-                                    </Typography>
-                                    <Typography variant="body2" color="textSecondary" component="p">
-                                        {moment(props.post.createdAt).startOf('hour').fromNow() }
-                                    </Typography>
-                                </CardContent>
                             </Link>
-                        </Card>
-                    </li>
-                )
-            }
+                        <CardMedia
+                            className={classes.media}
+                            image={props.post.postImage}
+                            title="Paella dish"
+                        />
+                        <Link to={{pathname: `/post/${props.post.postId}`, state: {id: props.post.postId} }}>
+                            <CardActions disableSpacing>
+                                <IconButton aria-label="add to favorites">
+                                    {isLiked() 
+                                        ? <FavoriteOutlinedIcon  style={{color:'rgb(228,64,95)'}} onClick={handleUnlike}/>
+                                        : <FavoriteBorderOutlinedIcon onClick={handleLike} />
+                                    }
+                                </IconButton>
+                                <span>{props.post.likeCount}</span>
+                                <IconButton aria-label="share">
+                                    <QuestionAnswerOutlinedIcon />
+                                </IconButton>
+                                <span>{props.post.commentCount}</span>
+                            </CardActions>
+                            <CardContent className={classes.content}>
+                                <Typography variant="body2" color="textSecondary" component="p">
+                                    <span className="userName">{props.post.userHandle}</span> {props.post.body}
+                                </Typography>
+                                <Typography variant="body2" color="textSecondary" component="p">
+                                    {moment(props.post.createdAt).startOf('hour').fromNow() }
+                                </Typography>
+                            </CardContent>
+                        </Link>
+                    </Card>
+                </li>
             </ul>
         </div>
     )
 }
 
-const mapStateToProps=({data},{id})=>{
-    const post=data.posts[id]
+const mapStateToProps=({data, user})=>{
     return{
-        post: post ? post : null
+        user: user,
+        loading: data.loading
     }
 }
 
