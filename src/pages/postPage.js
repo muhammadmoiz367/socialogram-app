@@ -1,13 +1,12 @@
 import React from 'react'
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
 import {useLocation} from 'react-router-dom'
 import Navbar from '../components/navbar'
 import RepliesPage from '../components/repliesPage'
 
-function PostPage() {
-
+function PostPage(props) {
     const location=useLocation();
-    console.log(location.state);
     return (
         <div className="timeline">
             <Navbar />
@@ -16,10 +15,5 @@ function PostPage() {
     )
 }
 
-const mapStateToProps=()=>{
-    return{
 
-    }
-}
-
-export default connect(mapStateToProps)(PostPage)
+export default withRouter(connect()(PostPage))

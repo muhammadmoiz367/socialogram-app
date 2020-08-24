@@ -8,15 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
 const useStyles = makeStyles(theme=>({
-  root: {
-    paddingLeft:100,
-    paddingRight:110,
-    paddingBottom:50,
-    marginLeft:330,
-    marginTop:60,
-    width: 170,
-  },
+  
   form: {
     '& > *': {
       width: '32ch',
@@ -81,7 +75,7 @@ function SignUp(props) {
       },[props])
 
   return (
-    <Card className={classes.root} >
+    <Card className='root signupRoot' >
          <form className={classes.form} noValidate autoComplete="off">
            <Typography className={classes.title} variant="h5" id="appName">
                 Socialogram

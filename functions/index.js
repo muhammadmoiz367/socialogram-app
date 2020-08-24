@@ -47,6 +47,7 @@ exports.createNotificationForLike = functions.firestore.document('likes/{id}').o
     .then((doc) => {
         if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
             return db.doc(`/notifications/${snapshot.id}`).set({
+                notificationId: snapshot.id,
                 createdAt: new Date().toISOString(),
                 recipient: doc.data().userHandle,
                 sender: snapshot.data().userHandle,
@@ -67,6 +68,7 @@ exports.createNotificationForComment = functions.firestore.document('comments/{i
     .then((doc) => {
         if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
             return db.doc(`/notifications/${snapshot.id}`).set({
+                notificationId: snapshot.id,
                 createdAt: new Date().toISOString(),
                 recipient: doc.data().userHandle,
                 sender: snapshot.data().userHandle,
@@ -81,6 +83,28 @@ exports.createNotificationForComment = functions.firestore.document('comments/{i
         return;
     });
 });
+
+exports.createNotificationForNewPost = functions.firestore.document('/posts/{postId}').onCreate((snapshot)=>{
+  return db.doc(`/posts/${snapshot.data().postId}`).get()
+  .then((doc) => {
+      if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
+          return db.doc(`/notifications/${snapshot.id}`).set({
+              notificationId: snapshot.id,
+              createdAt: new Date().toISOString(),
+              recipient: doc.data().userHandle,
+              sender: snapshot.data().userHandle,
+              type: 'post',
+              read: false,
+              postId: doc.id
+          })
+      }
+  })
+  .catch((err) => {
+      console.error(err);
+      return;
+  });
+});
+
 
 exports.onUserImageChange = functions.firestore.document('/users/{userId}').onUpdate((change) => {
     console.log(change.before.data());

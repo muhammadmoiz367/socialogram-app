@@ -19,14 +19,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Icon from '@material-ui/core/Icon';
 
 const useStyles = makeStyles(theme=>({
-  root: {
-    paddingLeft:100,
-    paddingRight:110,
-    paddingBottom:30,
-    marginLeft:330,
-    marginTop:140,
-    width: 170,
-  },
+  
   form: {
     '& > *': {
       width: '32ch',
@@ -85,12 +78,10 @@ function Login(props) {
           }
           props.dispatch(signIn(userDetails,props.history))
       }
-      useEffect(() => {
-        console.log(props)
-      },[props])
+      
 
   return (
-    <Card className={classes.root} >
+    <Card className='root loginRoot' >
          <form className={classes.form} noValidate autoComplete="off">
           <Typography className={classes.title} variant="h5" id="appName">
               Socialogram

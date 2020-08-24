@@ -1,5 +1,5 @@
 import React from 'react'
-import {withRouter, useLocation} from 'react-router-dom'
+import {useLocation} from 'react-router-dom'
 import Navbar from '../components/navbar'
 import UserProfile from '../components/userProfile'
 

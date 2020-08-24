@@ -1,15 +1,17 @@
-import firebase, { db, firebaseConfig } from '../firebase/firebase';
-import {signUpValidate, loginValidate} from '../utils/validators';
+import firebase, { db, firebaseConfig, storage } from '../firebase/firebase';
+import {signUpValidate, loginValidate, reduceUserDetails} from '../utils/validators';
 
 import {
     SET_ERRORS,
     CLEAR_ERRORS,
     LOADING_UI,
     SET_USER,
+    SET_AUTHENTICATED_USER,
     SET_UNAUTHENTICATED,
     SET_AUTHENTICATED,
     SIGNOUT_ERROR,
-    GET_SPECIFIC_USER
+    GET_SPECIFIC_USER,
+    MARK_NOTIFICATIONS_READ
 } from '../actionConstants';
 import 'firebase/auth';
 import 'firebase/firestore';
@@ -27,6 +29,12 @@ function clearErrors(){
 function setUser(data){
     return{
         type: SET_USER,
+        data
+    }
+}
+function setAuthenticatedUser(data){
+    return{
+        type: SET_AUTHENTICATED_USER,
         data
     }
 }
@@ -56,6 +64,11 @@ function getSpecificUserData(data){
     return{
         type: GET_SPECIFIC_USER,
         data
+    }
+}
+function markNotificationsReadAction(){
+    return{
+        type: MARK_NOTIFICATIONS_READ
     }
 }
 
@@ -138,7 +151,6 @@ export const signUp=(newUser,history)=>{
             db.collection("users").where('uid','==',uid).get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) =>{
-                    localStorage.setItem('UserData',doc.data())
                     dispatch(setUser(doc.data()))
                 });
                 history.push('/')
@@ -200,4 +212,91 @@ export const getSpecificUser = (handle)=>{
             console.log(err);
         })
     }
+}
+
+export const getAuthenticatedUser=(handle)=>{
+    return (dispatch)=>{
+        let userData={}
+        db.doc(`/users/${handle}`).get()
+        .then((doc)=>{
+            if(doc.exists){
+                userData.credentials=doc.data();
+                return db.collection('likes').where('userHandle','==',handle).get()
+            }
+        })
+        .then((data)=>{
+            userData.likes=[];
+            data.forEach((doc)=>{
+                userData.likes.push(doc.data())
+            });
+            return db.collection('notifications').where('recipient','==',handle).orderBy('createdAt','desc').limit(10).get()
+            .then((data)=>{
+                userData.notifications=[];
+                data.forEach(doc=>{
+                    userData.notifications.push({
+                        recipient: doc.data().recipient,
+                        sender: doc.data().sender,
+                        createdAt: doc.data().createdAt,
+                        postId: doc.data().postId,
+                        type: doc.data().type,
+                        read: doc.data().read,
+                        notificationsId: doc.id
+                    })
+                })
+                dispatch(setAuthenticatedUser(userData))
+            })
+           })
+        .catch((err)=>{
+            console.log(err);
+        })
+    }
+}
+//add user details
+export const addUserDetails=(handle, details)=>{
+    return (dispatch)=>{
+        let userDetails=reduceUserDetails(details);
+        db.doc(`/users/${handle}`).update(userDetails)
+        .then(()=>{
+            console.log('Details added successfully')
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
+    }
+}
+export const uploadImage=(image,handle)=>{
+    return async (dispatch)=>{
+        const imageExtension = image.name.split('.')[1];
+        const imageFileName = `${Math.round(Math.random() * 1000000000000).toString()}.${imageExtension}`;
+        const uploadTask=storage.ref(`userImages`).child(imageFileName)
+        await uploadTask.put(image)
+        uploadTask.getDownloadURL()
+        .then(url=>{
+            console.log(url)
+            const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${firebaseConfig.storageBucket}/o/userImages%2F${imageFileName}?alt=media`;
+            return db.doc(`/users/${handle}`).update({ imageUrl });
+        })
+        .then(() => {
+          console.log("image uploaded successfully");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
+    }
+}
+
+export const markNotificationsRead = (notificationsIds) =>{
+    return (dispatch) => {
+        let batch=db.batch();
+        notificationsIds.forEach((notificationId)=>{
+            const notification=db.doc(`/notifications/${notificationId}`)
+            batch.update(notification, { read: true})
+        });
+        batch.commit()
+        .then((res) => {
+            dispatch(markNotificationsReadAction());
+        })
+        .catch((err) => console.log(err));
+      }
 }

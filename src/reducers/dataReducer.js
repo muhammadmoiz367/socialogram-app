@@ -1,4 +1,4 @@
-import { GET_POSTS, CREATE_POST, GET_SPECIFIC_POST, CREATE_NEW_COMMENT, LIKE_POST, UNLIKE_POST, LOADING_DATA } from "../actionConstants"
+import { GET_POSTS, CREATE_POST, GET_SPECIFIC_POST, CREATE_NEW_COMMENT, LIKE_POST, UNLIKE_POST, LOADING_DATA, DELETE_POST, DELETE_COMMENT } from "../actionConstants"
 
 const initialState={
     posts: [],
@@ -24,18 +24,12 @@ const dataReducer=(state=initialState, action)=>{
             const {posts}=state
             return{
                 ...state,
-                posts: posts.push(action.data)
+                posts: [...state.posts, action.data]
             }
         case GET_SPECIFIC_POST:
             return{
                 ...state,
                 specificPost: action.data
-            }
-        case CREATE_NEW_COMMENT:
-            const {comments}=state
-            return{
-                ...state,
-                comments: comments.push(action.data)
             }
         case LIKE_POST:
         case UNLIKE_POST:
@@ -44,6 +38,9 @@ const dataReducer=(state=initialState, action)=>{
             return{
                 ...state
             }
+        case CREATE_NEW_COMMENT:
+        case DELETE_POST:
+        case DELETE_COMMENT:
         default:
             return state
     }

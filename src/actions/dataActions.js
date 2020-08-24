@@ -1,7 +1,7 @@
-
 import firebase, { db } from '../firebase/firebase';
-import {GET_POSTS, CREATE_POST, GET_SPECIFIC_POST, CREATE_NEW_COMMENT, LIKE_POST, UNLIKE_POST, LOADING_DATA} from '../actionConstants'
 import 'firebase/firestore';
+import {GET_POSTS, CREATE_POST, GET_SPECIFIC_POST, CREATE_NEW_COMMENT, LIKE_POST, UNLIKE_POST, LOADING_DATA, DELETE_COMMENT, DELETE_POST} from '../actionConstants'
+import {setProgressBar} from './progressBar'
 import post from '../components/post';
 
 function getPosts(data){
@@ -22,10 +22,9 @@ function getSpecificPostData(data){
     data
   }
 }
-function createNewComment(comment){
+function createNewComment(){
   return{
-    type: CREATE_NEW_COMMENT,
-    data: comment
+    type: CREATE_NEW_COMMENT
   }
 }
 function likePostAction(data){
@@ -40,10 +39,22 @@ function unlikePostAction(data){
     data
   }
 }
-export const handleInitialData=()=>{
+function deletePostAction(){
+  return{
+    type: DELETE_POST
+  }
+}
+function deleteCommentAction(){
+  return{
+    type: DELETE_COMMENT
+  }
+}
+
+export const getAllPosts=()=>{
   return (dispatch, getState, {getFirebase, getFirestore})=>{
     const firebase=getFirebase();
     const firestore=getFirebase().firestore()
+    dispatch(setProgressBar('OPEN'))
     let id;
     db.collection("posts").orderBy('createdAt', 'desc').get()
     .then((querySnapshot) => {
@@ -104,7 +115,14 @@ export const getSpecificPost=(id)=>{
     .then((data) => {
         postData.comments = [];
         data.forEach((doc) => {
-            postData.comments.push(doc.data());
+            postData.comments.push({
+              commentId: doc.id,
+              body: doc.data().body,
+              createdAt: doc.data().createdAt,
+              postId: doc.data().postId,
+              userHandle: doc.data().userHandle,
+              userImage: doc.data().userImage
+            });
         });
         return db.collection('likes').where('postId', '==', id).get();
     })
@@ -135,11 +153,7 @@ export const commentOnPost=(newComment, postId)=>{
     })
     .then((doc)=>{
       console.log('new comment added with id: ', doc.id)
-      db.doc(`/comments/${doc.id}`).get()
-    })
-    .then(doc=>{
-      window.location.reload(false);
-      dispatch(createNewComment(doc.data()))
+      dispatch(createNewComment())
     })
     .catch((err)=>{
       console.log(err);
@@ -222,22 +236,65 @@ export const unlikePost = (postId, handle) => {
   }
 };
 
-//forced check for like
-export const forcedIsLiked = (postId, handle) =>{
+//Delete post
+export const deletePost = (postId, handle) => {
   return (dispatch)=>{
-    db.collection('likes').where('userHandle', '==', handle).where('postId', '==', postId).limit(1).get()
-    .then((doc)=>{
-      if(doc.exists){
-        console.log('true')
-        return true
-      }
-      else{
-        console.log('true')
-        return false
-      }
-    })
-    .catch(err=>{
-      console.log(err)
-    })
-  }
-}
+    const document = db.doc(`/posts/${postId}`);
+    document.get()
+      .then((doc) => {
+        if (!doc.exists) {
+          console.log('post not found');
+        }
+        if (doc.data().userHandle !== handle) {
+          console.log('Unauthorized');
+        } else {
+          return document.delete();
+        }
+      })
+      .then(() => {
+        dispatch(deletePostAction())
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+};
+//Delete a comment
+export const deleteComment = (commentId, handle, postId) => {
+  return (dispatch)=>{
+    const postDocument = db.doc(`/posts/${postId}`);
+    const document = db.doc(`/comments/${commentId}`);
+    let postData;
+    document.get()
+      .then((doc) => {
+        if (!doc.exists) {
+          console.log('post not found');
+        }
+        if (doc.data().userHandle !== handle) {
+          console.log('Unauthorized');
+        } else {
+          return document.delete();
+        }
+      })
+      .then(()=>{
+        return postDocument.get()
+      })
+      .then((doc) => {
+        if (doc.exists) {
+          postData = doc.data();
+          postData.postId = doc.id;
+          let updatedCommentCount=postData.commentCount;
+          updatedCommentCount=updatedCommentCount-1
+          console.log(updatedCommentCount)
+          return db.doc(`/posts/${postId}`).update({ commentCount: updatedCommentCount });
+        }
+      })
+      .then(() => {
+        console.log('comment deleted')
+        dispatch(deleteCommentAction())
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+};

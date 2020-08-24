@@ -34,6 +34,7 @@ function App() {
         <AuthRoute exact path="/" component={Home} />
         <AuthRoute exact path="/new-post" component={NewPost} />
         <AuthRoute exact path="/post/:postId" component={PostPage} />
+        <AuthRoute exact path="/users/:handle/post/:postId" component={PostPage} />
         <AuthRoute exact path="/user/:handle" component={Profile} />
         <Route path="/signup" component={SignUp} />
       </Switch>

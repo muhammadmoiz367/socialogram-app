@@ -1,4 +1,4 @@
-import {SET_USER, SET_UNAUTHENTICATED, SET_AUTHENTICATED, SIGNOUT_ERROR, LIKE_POST, UNLIKE_POST, GET_SPECIFIC_USER} from '../actionConstants'
+import {SET_USER, SET_AUTHENTICATED_USER, SET_UNAUTHENTICATED, SET_AUTHENTICATED, SIGNOUT_ERROR, LIKE_POST, UNLIKE_POST, GET_SPECIFIC_USER, MARK_NOTIFICATIONS_READ} from '../actionConstants'
 
 const initialState={
     authenticated: false,
@@ -21,6 +21,13 @@ export default function authUserReducer(state=initialState, action){
             return{
                 ...state,
                 credentials: action.data
+            }
+        case SET_AUTHENTICATED_USER:
+            return{
+                ...state,
+                credentials: action.data.credentials,
+                likes: action.data.likes,
+                notifications: action.data.notifications
             }
         case SIGNOUT_ERROR:
             return{
@@ -48,6 +55,11 @@ export default function authUserReducer(state=initialState, action){
                 ...state,
                 specificUser: action.data   
             }
+        case MARK_NOTIFICATIONS_READ:
+            state.notifications.forEach((not) => (not.read = true));
+            return {
+                ...state
+            };
         default:
             return state
     }

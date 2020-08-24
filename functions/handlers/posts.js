@@ -206,7 +206,7 @@ exports.getPost = (req, res) => {
       });
   };
 
-  //Delete a comment
+//Delete a comment
 //   exports.deletePost = (req, res) => {
 //     let likeCount;
 //     const document = db.doc(`/posts/${req.params.postId}`);

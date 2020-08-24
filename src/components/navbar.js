@@ -1,8 +1,8 @@
-import React from 'react';
-import { fade, makeStyles } from '@material-ui/core/styles';
-import {signOut} from '../actions/authUserActions'
+import React, {useState} from 'react';
 import {Link} from 'react-router-dom'
 import {connect} from 'react-redux'
+//material UI imports
+import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -10,12 +10,16 @@ import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import MenuIcon from '@material-ui/icons/Menu';
+import MoreIcon from '@material-ui/icons/MoreVert';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Avatar from '@material-ui/core/Avatar';
-import MoreIcon from '@material-ui/icons/MoreVert';
 import HomeIcon from '@material-ui/icons/Home';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import {signOut} from '../actions/authUserActions'
+import Notifications from './notifications'
+
+
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -25,22 +29,8 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   title: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-      marginLeft: theme.spacing(3)
-    },
-  },
-
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
+    display: 'block',
+    marginLeft: theme.spacing(8)
   },
   sectionDesktop: {
     display: 'none',
@@ -54,6 +44,18 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: '20ch',
+    },
+  },
+
+  
   smaller: {
     width: theme.spacing(3),
     height: theme.spacing(3),
@@ -73,6 +75,7 @@ function Navbar(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [notificationsAnchorEl, setNotificationsAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -107,6 +110,7 @@ function Navbar(props) {
       transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       open={isMenuOpen}
       onClose={handleMenuClose}
+      className="logoutDropdown"
     >
       <MenuItem onClick={handleSignOut}>Logout</MenuItem>
     </Menu>
@@ -132,11 +136,7 @@ function Navbar(props) {
         </Link>
       </MenuItem>
       <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
+        <Notifications color="black" />
         <p>Notifications</p>
       </MenuItem>
       <MenuItem >
@@ -163,14 +163,7 @@ function Navbar(props) {
     <div className={classes.grow}>
       <AppBar position="fixed" style={{backgroundColor:'rgb(228,64,95)'}}>
         <Toolbar>
-        <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-          >
-            <MenuIcon />
-          </IconButton>
+        
           <Link to="/">
             <Typography className={classes.title} variant="h6" noWrap id="appName" style={{color:'white'}}>
               Socialogram
@@ -184,14 +177,13 @@ function Navbar(props) {
               <HomeIcon style={{color:'white'}} />
             </Link>  
             </IconButton>
-            <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <Notifications color="white" />
             <Link to={{pathname: `/user/${props.user.credentials.handle}`, state: {handle: props.user.credentials.handle} }}>
-              <Avatar alt="Remy Sharp" src={props.user.credentials.imageUrl} className={classes.small} onClick={handleProfileMenuOpen}/>
+              <Avatar alt="Remy Sharp" src={props.user.credentials.imageUrl} className={classes.small}/>
             </Link>
+            <IconButton>
+              <ArrowDropDownIcon style={{color:'white'}} onClick={handleProfileMenuOpen} />
+            </IconButton>
           </div>
           <div className={classes.sectionMobile}>
             <IconButton

@@ -1,6 +1,7 @@
 import {SET_ERRORS, CLEAR_ERRORS, LOADING_UI} from '../actionConstants'
 
 const initialState={
+    progressBarStatus: 'CLOSE',
     loading: false,
     errors: {}
 }
